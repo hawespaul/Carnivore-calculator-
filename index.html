@@ -1,1 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Carnivore Diet Tracker</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 30px;
+      background-color: #f7f7f7;
+    }
+    h1 {
+      color: #333;
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+    }
+    input, select {
+      padding: 8px;
+      width: 100%;
+      max-width: 300px;
+      margin-top: 5px;
+    }
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 16px;
+    }
+    #results {
+      margin-top: 30px;
+      padding: 20px;
+      background: #fff;
+      border: 1px solid #ccc;
+    }
+  </style>
+</head>
+<body>
+  <h1>Carnivore Diet Tracker</h1>
 
+  <label for="currentWeight">Current Weight (lbs):</label>
+  <input type="number" id="currentWeight">
+
+  <label for="goalWeight">Goal Weight (lbs):</label>
+  <input type="number" id="goalWeight">
+
+  <label for="height">Height (inches):</label>
+  <input type="number" id="height">
+
+  <label for="fastingDays">Days Fasted:</label>
+  <input type="number" id="fastingDays">
+
+  <label for="caloriesBurned">Calories Burned from Exercise (per day):</label>
+  <input type="number" id="caloriesBurned">
+
+  <label for="bodyFat">Estimated Body Fat % (for muscle mass):</label>
+  <input type="number" id="bodyFat">
+
+  <button onclick="calculate()">Calculate</button>
+
+  <div id="results"></div>
+
+  <script>
+    function calculate() {
+      const currentWeight = parseFloat(document.getElementById("currentWeight").value);
+      const goalWeight = parseFloat(document.getElementById("goalWeight").value);
+      const height = parseFloat(document.getElementById("height").value);
+      const fastingDays = parseFloat(document.getElementById("fastingDays").value);
+      const caloriesBurned = parseFloat(document.getElementById("caloriesBurned").value);
+      const bodyFat = parseFloat(document.getElementById("bodyFat").value);
+
+      if (isNaN(currentWeight) || isNaN(goalWeight) || isNaN(height) || isNaN(fastingDays) || isNaN(caloriesBurned) || isNaN(bodyFat)) {
+        document.getElementById("results").innerHTML = "<strong>Please fill in all fields.</strong>";
+        return;
+      }
+
+      const weightLossPerDay = 0.5 + (caloriesBurned / 3500); // ~0.5 lb/day + exercise
+      const projectedWeightLoss = weightLossPerDay * fastingDays;
+      const projectedWeight = currentWeight - projectedWeightLoss;
+
+      const bmi = (currentWeight / (height * height)) * 703;
+      const leanMass = currentWeight * (1 - (bodyFat / 100));
+      const fatMass = currentWeight * (bodyFat / 100);
+
+      const results = `
+        <h3>Results</h3>
+        <p><strong>Projected Weight After Fasting:</strong> ${projectedWeight.toFixed(1)} lbs</p>
+        <p><strong>Weight Left to Goal:</strong> ${(projectedWeight - goalWeight).toFixed(1)} lbs</p>
+        <p><strong>Estimated Weight Loss:</strong> ${projectedWeightLoss.toFixed(1)} lbs in ${fastingDays} day(s)</p>
+        <p><strong>Current BMI:</strong> ${bmi.toFixed(1)}</p>
+        <p><strong>Lean Body Mass:</strong> ${leanMass.toFixed(1)} lbs</p>
+        <p><strong>Fat Mass:</strong> ${fatMass.toFixed(1)} lbs</p>
+      `;
+
+      document.getElementById("results").innerHTML = results;
+    }
+  </script>
+</body>
+</html>
